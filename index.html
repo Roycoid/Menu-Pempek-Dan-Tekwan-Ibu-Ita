@@ -134,10 +134,20 @@
             <label>Nama Pemesan</label>
             <input type="text" id="custName" class="form-control" placeholder="Contoh: Budi">
         </div>
+
         <div class="form-group">
+            <label>Tipe Pesanan</label>
+            <select id="custDelivery" class="form-control" onchange="toggleAddress()">
+                <option value="🛵 Antar ke Alamat">🛵 Antar ke Alamat</option>
+                <option value="🏪 Ambil Sendiri di Resto">🏪 Ambil Sendiri di Resto</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="addressGroup">
             <label>Alamat Lengkap / Patokan</label>
             <textarea id="custAddress" class="form-control" rows="3" placeholder="Contoh: Jl. Merdeka No.10 (Pagar Hitam)"></textarea>
         </div>
+        
         <div class="form-group">
             <label>Metode Pembayaran</label>
             <select id="custPayment" class="form-control">
@@ -232,6 +242,21 @@
         }
     }
 
+    // Tampilkan/Sembunyikan Alamat tergantung Tipe Pesanan
+    function toggleAddress() {
+        const deliveryType = document.getElementById('custDelivery').value;
+        const addressGroup = document.getElementById('addressGroup');
+        const addressInput = document.getElementById('custAddress');
+        
+        if(deliveryType === "🏪 Ambil Sendiri di Resto") {
+            addressGroup.style.display = "none";
+            addressInput.value = "Ambil Sendiri"; // Auto-isi biar tidak kena validasi wajib isi
+        } else {
+            addressGroup.style.display = "block";
+            addressInput.value = ""; // Kosongkan kembali
+        }
+    }
+
     // Modal Logic
     function openModal() { document.getElementById('orderModal').classList.add('active'); }
     function closeModal() { document.getElementById('orderModal').classList.remove('active'); }
@@ -239,12 +264,13 @@
     // Proses Kirim ke WA
     function kirimKeWA() {
         const name = document.getElementById('custName').value;
+        const delivery = document.getElementById('custDelivery').value;
         const address = document.getElementById('custAddress').value;
         const payment = document.getElementById('custPayment').value;
         const note = document.getElementById('custNote').value;
 
         if(!name || !address) {
-            alert('Mohon isi Nama dan Alamat pengiriman!');
+            alert('Mohon lengkapi Nama dan Alamat (jika diantar)!');
             return;
         }
 
@@ -266,13 +292,20 @@
         if(payment === "QRIS / Transfer Bank") {
             paymentMessage = "(Mohon kirimkan gambar QRIS atau info rekening untuk pembayarannya ya)";
         } else {
-            paymentMessage = "(Pembayaran akan dilakukan secara tunai saat pesanan diantar)";
+            paymentMessage = "(Pembayaran akan dilakukan secara tunai)";
+        }
+
+        // Tampilkan alamat hanya jika diantar
+        let addressText = "";
+        if(delivery === "🛵 Antar ke Alamat") {
+            addressText = `📍 Alamat: ${address}\n`;
         }
 
         const textMessage = `*HALO IBU ITA, SAYA MAU PESAN Eceran:* 🐟\n\n` +
             `*DATA PEMESAN:*\n` +
             `👤 Nama: ${name}\n` +
-            `📍 Alamat: ${address}\n` +
+            `📦 Tipe Pesanan: ${delivery}\n` +
+            addressText +
             `💳 Metode Bayar: ${payment}\n` +
             `📝 Catatan: ${note || '-'}\n\n` +
             `*DETAIL PESANAN:*\n` +
