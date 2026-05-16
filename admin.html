@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Pempek Ibu Ita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #f8fafc; color: #334155; padding: 20px; }
+        
+        .header { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 20px; color: #0f172a; }
+        .header .badge { background: #d97706; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+
+        /* Tabel Styling */
+        .table-container { background: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 15px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        th { background-color: #f1f5f9; color: #475569; font-weight: 600; white-space: nowrap; }
+        tr:hover { background-color: #f8fafc; }
+        
+        .tipe-pesanan { font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-block; }
+        .tipe-antar { background-color: #dbeafe; color: #1e3a8a; }
+        .tipe-ambil { background-color: #fef3c7; color: #b45309; }
+
+        .total-harga { font-weight: 700; color: #059669; }
+        .menu-list { list-style-type: none; font-size: 13px; color: #64748b; }
+        .menu-list li { margin-bottom: 3px; }
+        
+        .loading { text-align: center; padding: 50px; color: #64748b; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1><i class="fa-solid fa-chart-line" style="color:#d97706;"></i> Data Pesanan Eceran</h1>
+        <div class="badge" id="totalOrders">0 Pesanan</div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Waktu Order</th>
+                    <th>Nama Pelanggan</th>
+                    <th>Tipe & Alamat</th>
+                    <th>Daftar Pesanan</th>
+                    <th>Pembayaran</th>
+                    <th>Total Belanja</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="6" class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Memuat data dari database...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+<script>
+    // 1. Sambungkan ke Database Firebase-mu
+    const firebaseConfig = {
+        apiKey: "AIzaSyCZONKYX2sXBaCsIvZU6Nmd9r7b6KYgxhk",
+        authDomain: "pempek-dan-tekwan-ibu-ita.firebaseapp.com",
+        projectId: "pempek-dan-tekwan-ibu-ita",
+        storageBucket: "pempek-dan-tekwan-ibu-ita.firebasestorage.app",
+        messagingSenderId: "680562252929",
+        appId: "1:680562252929:web:09de957059d0241b77c180"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // 2. Ambil data dari tabel "orders"
+    const tableBody = document.getElementById('tableBody');
+    const totalOrdersBadge = document.getElementById('totalOrders');
+
+    // Mengambil data secara real-time dan diurutkan dari yang terbaru
+    db.collection("orders").orderBy("tanggalOrder", "desc").onSnapshot((querySnapshot) => {
+        tableBody.innerHTML = ""; // Kosongkan tabel loading
+        let counter = 0;
+
+        if(querySnapshot.empty) {
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px;">Belum ada data pesanan.</td></tr>`;
+            return;
+        }
+
+        querySnapshot.forEach((doc) => {
+            counter++;
+            const data = doc.data();
+            
+            // Format Waktu
+            let waktuOrder = "Waktu tidak diketahui";
+            if(data.tanggalOrder) {
+                const dateObj = data.tanggalOrder.toDate();
+                waktuOrder = dateObj.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+            }
+
+            // Format Tipe Pesanan & Alamat
+            let tipeClass = data.tipePesanan.includes("Antar") ? "tipe-antar" : "tipe-ambil";
+            let alamatHtml = data.tipePesanan.includes("Antar") ? `<div style="margin-top:5px; font-size:12px; color:#64748b;">📍 ${data.alamatPengiriman}</div>` : "";
+
+            // Format Daftar Menu
+            let menuHtml = '<ul class="menu-list">';
+            if(data.daftarPesanan && data.daftarPesanan.length > 0) {
+                data.daftarPesanan.forEach(item => {
+                    menuHtml += `<li>${item.qty}x ${item.namaMenu}</li>`;
+                });
+            }
+            menuHtml += '</ul>';
+
+            // Buat Baris Tabel Baru
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${waktuOrder}</td>
+                <td><strong>${data.namaPelanggan}</strong></td>
+                <td>
+                    <span class="tipe-pesanan ${tipeClass}">${data.tipePesanan}</span>
+                    ${alamatHtml}
+                </td>
+                <td>${menuHtml}</td>
+                <td>${data.metodePembayaran}</td>
+                <td class="total-harga">Rp ${data.totalBelanja.toLocaleString('id-ID')}</td>
+            `;
+            tableBody.appendChild(tr);
+        });
+
+        // Update jumlah badge
+        totalOrdersBadge.innerText = `${counter} Pesanan`;
+    });
+</script>
+
+</body>
+</html>
