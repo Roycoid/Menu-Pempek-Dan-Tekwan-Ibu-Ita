@@ -1,0 +1,123 @@
+<script>
+    // Data Menu berdasarkan Brosur
+    const menuData = [
+        { id: 'p_telur', name: 'Pempek Telur Kecil', desc: 'Isian telur kocok', price: 3000, category: 'satuan' },
+        { id: 'p_lenjer', name: 'Pempek Lenjer', desc: 'Bentuk panjang original', price: 3000, category: 'satuan' },
+        { id: 'p_adaan', name: 'Pempek Adaan', desc: 'Bentuk bulat gurih', price: 3000, category: 'satuan' },
+        { id: 'p_keriting', name: 'Pempek Keriting', desc: 'Tekstur keriting renyah', price: 3000, category: 'satuan' },
+        { id: 'p_kulit', name: 'Pempek Kulit', desc: 'Renyah dari kulit ikan', price: 3000, category: 'satuan' },
+        
+        { id: 'p_kapal', name: 'Pempek Kapal Selam', desc: 'Ukuran besar isi telur utuh', price: 18000, category: 'premium' },
+        
+        { id: 't_biasa', name: 'Tekwan', desc: 'Sup bola ikan kuah kaldu udang', price: 12000, category: 'tekwan' },
+        { id: 't_indomie', name: 'Tekwan Indomie', desc: 'Paduan tekwan lezat dengan mi instan', price: 17000, category: 'tekwan' },
+    ];
+
+    let cart = {};
+
+    // Render Menu
+    function renderMenu() {
+        ['satuan', 'premium', 'tekwan'].forEach(cat => {
+            const container = document.getElementById(`menu-${cat}`);
+            const items = menuData.filter(m => m.category === cat);
+            
+            items.forEach(item => {
+                cart[item.id] = 0; // Set awal qty = 0
+                
+                const div = document.createElement('div');
+                div.className = 'menu-item';
+                div.innerHTML = `
+                    <div class="menu-info">
+                        <div class="menu-name">${item.name}</div>
+                        <div class="menu-desc">${item.desc}</div>
+                        <div class="menu-price">Rp ${item.price.toLocaleString('id-ID')}</div>
+                    </div>
+                    <div class="qty-control">
+                        <button class="qty-btn" onclick="updateQty('${item.id}', -1)"><i class="fa-solid fa-minus"></i></button>
+                        <div class="qty-value" id="qty-${item.id}">0</div>
+                        <button class="qty-btn" onclick="updateQty('${item.id}', 1)"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        });
+    }
+
+    // Update Quantity
+    function updateQty(id, change) {
+        if(cart[id] + change >= 0) {
+            cart[id] += change;
+            document.getElementById(`qty-${id}`).innerText = cart[id];
+            calculateTotal();
+        }
+    }
+
+    // Kalkulasi Total
+    function calculateTotal() {
+        let total = 0;
+        let totalItems = 0;
+        
+        menuData.forEach(item => {
+            total += cart[item.id] * item.price;
+            totalItems += cart[item.id];
+        });
+
+        document.getElementById('total-price').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+        
+        const btn = document.getElementById('btn-checkout');
+        if(totalItems > 0) {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-brands fa-whatsapp"></i> Pesan (${totalItems} Item)`;
+        } else {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-brands fa-whatsapp"></i> Lanjut Order`;
+        }
+    }
+
+    // Modal Logic
+    function openModal() { document.getElementById('orderModal').classList.add('active'); }
+    function closeModal() { document.getElementById('orderModal').classList.remove('active'); }
+
+    // Proses Kirim ke WA
+    function kirimKeWA() {
+        const name = document.getElementById('custName').value;
+        const address = document.getElementById('custAddress').value;
+        const note = document.getElementById('custNote').value;
+
+        if(!name || !address) {
+            alert('Mohon isi Nama dan Alamat pengiriman!');
+            return;
+        }
+
+        let orderList = "";
+        let total = 0;
+
+        menuData.forEach(item => {
+            if(cart[item.id] > 0) {
+                let subtotal = cart[item.id] * item.price;
+                orderList += `▪️ ${cart[item.id]}x ${item.name} (Rp ${subtotal.toLocaleString('id-ID')})\n`;
+                total += subtotal;
+            }
+        });
+
+        // Nomer WA sesuai brosur baru
+        const waNumber = "6289508573323"; 
+
+        const textMessage = `*HALO IBU ITA, SAYA MAU PESAN Eceran:* 🐟\n\n` +
+            `*DATA PEMESAN:*\n` +
+            `👤 Nama: ${name}\n` +
+            `📍 Alamat: ${address}\n` +
+            `📝 Catatan: ${note || '-'}\n\n` +
+            `*DETAIL PESANAN:*\n` +
+            `${orderList}\n` +
+            `*TOTAL BELANJA: Rp ${total.toLocaleString('id-ID')}*\n\n` +
+            `(Mohon info nomor rekening untuk pembayarannya ya)`;
+
+        // PERUBAHAN: Pakai location.href agar anti-blokir di laptop
+        const linkWA = `https://wa.me/${waNumber}?text=${encodeURIComponent(textMessage)}`;
+        window.location.href = linkWA;
+    }
+
+    // Init
+    renderMenu();
+</script>
