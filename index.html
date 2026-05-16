@@ -73,7 +73,7 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: var(--dark); }
-        .form-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; background-color: var(--white); }
         .form-control:focus { border-color: var(--primary); }
         .close-modal { float: right; cursor: pointer; font-size: 20px; color: var(--muted); }
 
@@ -137,6 +137,13 @@
         <div class="form-group">
             <label>Alamat Lengkap / Patokan</label>
             <textarea id="custAddress" class="form-control" rows="3" placeholder="Contoh: Jl. Merdeka No.10 (Pagar Hitam)"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Metode Pembayaran</label>
+            <select id="custPayment" class="form-control">
+                <option value="QRIS / Transfer Bank">📱 QRIS / Transfer Bank</option>
+                <option value="Cash / Tunai">💵 Cash / Tunai (Bayar di Tempat)</option>
+            </select>
         </div>
         <div class="form-group">
             <label>Catatan Opsional</label>
@@ -233,6 +240,7 @@
     function kirimKeWA() {
         const name = document.getElementById('custName').value;
         const address = document.getElementById('custAddress').value;
+        const payment = document.getElementById('custPayment').value;
         const note = document.getElementById('custNote').value;
 
         if(!name || !address) {
@@ -251,20 +259,27 @@
             }
         });
 
-        // Nomer WA sesuai brosur baru
         const waNumber = "6289508573323"; 
+
+        // Penyesuaian pesan WA berdasarkan metode pembayaran
+        let paymentMessage = "";
+        if(payment === "QRIS / Transfer Bank") {
+            paymentMessage = "(Mohon kirimkan gambar QRIS atau info rekening untuk pembayarannya ya)";
+        } else {
+            paymentMessage = "(Pembayaran akan dilakukan secara tunai saat pesanan diantar)";
+        }
 
         const textMessage = `*HALO IBU ITA, SAYA MAU PESAN Eceran:* 🐟\n\n` +
             `*DATA PEMESAN:*\n` +
             `👤 Nama: ${name}\n` +
             `📍 Alamat: ${address}\n` +
+            `💳 Metode Bayar: ${payment}\n` +
             `📝 Catatan: ${note || '-'}\n\n` +
             `*DETAIL PESANAN:*\n` +
             `${orderList}\n` +
             `*TOTAL BELANJA: Rp ${total.toLocaleString('id-ID')}*\n\n` +
-            `(Mohon info nomor rekening untuk pembayarannya ya)`;
+            `${paymentMessage}`;
 
-        // PERUBAHAN: Pakai location.href agar anti-blokir di laptop
         const linkWA = `https://wa.me/${waNumber}?text=${encodeURIComponent(textMessage)}`;
         window.location.href = linkWA;
     }
