@@ -28,7 +28,8 @@
         
         .tipe-pesanan { font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: 600; display: inline-block; }
         .tipe-antar { background-color: #dbeafe; color: #1e3a8a; }
-        .tipe-ambil { background-color: #fef3c7; color: #b45309; }
+        .tipe-bungkus { background-color: #f3e8ff; color: #6b21a8; }
+        .tipe-makan { background-color: #fce7f3; color: #9d174d; }
         .tipe-paket { background-color: #d1fae5; color: #065f46; font-weight: 700; }
 
         .total-harga { font-weight: 700; color: #059669; }
@@ -41,7 +42,7 @@
 <body>
 
     <div class="header">
-        <h1><i class="fa-solid fa-chart-line" style="color:#d97706;"></i> Data Pesanan Eceran</h1>
+        <h1><i class="fa-solid fa-chart-line" style="color:#d97706;"></i> Data Pesanan (Ruko & Online)</h1>
         <div class="badge" id="totalOrders">0 Pesanan</div>
     </div>
 
@@ -51,7 +52,7 @@
                 <tr>
                     <th>Waktu Order</th>
                     <th>Nama Pelanggan</th>
-                    <th>Tipe & Alamat</th>
+                    <th>Tipe & Detail Lokasi</th>
                     <th>Daftar Pesanan</th>
                     <th>Pembayaran</th>
                     <th>Total Belanja</th>
@@ -85,7 +86,6 @@
     </div>
 
 <script>
-    // 1. Sambungkan ke Database Firebase-mu
     const firebaseConfig = {
         apiKey: "AIzaSyCZONKYX2sXBaCsIvZU6Nmd9r7b6KYgxhk",
         authDomain: "pempek-dan-tekwan-ibu-ita.firebaseapp.com",
@@ -97,9 +97,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ==========================================
-    // SCRIPT BAGIAN 1: TARIK DATA PESANAN ECERAN
-    // ==========================================
+    // TARIK DATA PESANAN
     const tableBodyOrders = document.getElementById('tableBodyOrders');
     const totalOrdersBadge = document.getElementById('totalOrders');
 
@@ -120,8 +118,20 @@
                     waktuOrder = dateObj.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
                 }
 
-                let tipeClass = data.tipePesanan.includes("Antar") ? "tipe-antar" : "tipe-ambil";
-                let alamatHtml = data.tipePesanan.includes("Antar") ? `<div style="margin-top:5px; font-size:12px; color:#64748b;">📍 ${data.alamatPengiriman}</div>` : "";
+                // Logika Pintar Memisahkan Tipe & Tampilan Detail Lokasi di Admin
+                let tipeClass = "";
+                let detailLokasiHtml = "";
+
+                if (data.tipePesanan.includes("Antar")) {
+                    tipeClass = "tipe-antar";
+                    detailLokasiHtml = `<div style="margin-top:5px; font-size:12px; color:#64748b;">📍 Alamat: ${data.alamatPengiriman}</div>`;
+                } else if (data.tipePesanan.includes("Tempat")) {
+                    tipeClass = "tipe-makan";
+                    detailLokasiHtml = `<div style="margin-top:5px; font-size:12px; color:#c2185b; font-weight:600;">🪑 ${data.alamatPengiriman || 'Meja tidak diisi'}</div>`;
+                } else {
+                    tipeClass = "tipe-bungkus";
+                    detailLokasiHtml = `<div style="margin-top:5px; font-size:12px; color:#6b21a8;">🛍️ Dibungkus (Takeaway)</div>`;
+                }
 
                 let menuHtml = '<ul class="menu-list">';
                 if(data.daftarPesanan && data.daftarPesanan.length > 0) {
@@ -131,11 +141,16 @@
                 }
                 menuHtml += '</ul>';
 
+                // Tampilkan catatan opsional jika ada
+                let catatanHtml = data.catatanTambahan && data.catatanTambahan !== '-' 
+                    ? `<div style="font-size:11px; color:#b45309; margin-top:4px;">📝_Catatan: "${data.catatanTambahan}"</div>` 
+                    : '';
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${waktuOrder}</td>
-                    <td><strong>${data.namaPelanggan}</strong></td>
-                    <td><span class="tipe-pesanan ${tipeClass}">${data.tipePesanan}</span>${alamatHtml}</td>
+                    <td><strong>${data.namaPelanggan}</strong>${catatanHtml}</td>
+                    <td><span class="tipe-pesanan ${tipeClass}">${data.tipePesanan}</span>${detailLokasiHtml}</td>
                     <td>${menuHtml}</td>
                     <td>${data.metodePembayaran}</td>
                     <td class="total-harga">Rp ${data.totalBelanja.toLocaleString('id-ID')}</td>
@@ -146,13 +161,10 @@
         totalOrdersBadge.innerText = `${counterOrders} Pesanan`;
     });
 
-    // ==========================================
-    // SCRIPT BAGIAN 2: TARIK DATA MITRA / RESELLER
-    // ==========================================
+    // TARIK DATA MITRA
     const tableBodyReseller = document.getElementById('tableBodyReseller');
     const totalResellerBadge = document.getElementById('totalReseller');
 
-    // Menarik data dari collection "calon_mitra"
     db.collection("calon_mitra").onSnapshot((querySnapshot) => {
         tableBodyReseller.innerHTML = ""; 
         let counterReseller = 0;
@@ -164,7 +176,6 @@
                 counterReseller++;
                 const data = doc.data();
                 
-                // Pengecekan format waktu (karena format data mitra mungkin berbeda)
                 let waktuDaftar = data.waktuDaftar || "Waktu tidak diketahui";
                 if(data.waktuDaftar && typeof data.waktuDaftar.toDate === 'function') {
                     waktuDaftar = data.waktuDaftar.toDate().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
