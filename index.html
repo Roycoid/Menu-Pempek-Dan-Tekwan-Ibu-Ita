@@ -18,20 +18,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg); color: var(--text); padding-bottom: 100px; }
         
-        /* Header */
         .header { background: var(--white); padding: 15px 20px; text-align: center; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .header h1 { font-size: 18px; color: var(--dark); font-weight: 800; }
         .header p { font-size: 12px; color: var(--muted); }
 
-        /* Banner Promosi */
-        .promo-reseller-banner {
-            display: flex; align-items: center; gap: 15px; 
-            background: linear-gradient(135deg, #fffbeb, #fef3c7);
-            margin: 15px; padding: 15px; border-radius: 12px; 
-            text-decoration: none; color: var(--dark);
-            border: 1px solid #fde68a; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15); 
-            transition: transform 0.2s;
-        }
+        .promo-reseller-banner { display: flex; align-items: center; gap: 15px; background: linear-gradient(135deg, #fffbeb, #fef3c7); margin: 15px; padding: 15px; border-radius: 12px; text-decoration: none; color: var(--dark); border: 1px solid #fde68a; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15); transition: transform 0.2s; }
         .promo-reseller-banner:active { transform: scale(0.98); }
         .promo-icon { background: var(--primary); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
         .promo-text { flex: 1; }
@@ -39,7 +30,6 @@
         .promo-text p { font-size: 11px; color: #92400e; line-height: 1.4; }
         .promo-reseller-banner .chevron { color: #d97706; font-size: 16px; }
 
-        /* Kategori & Menu */
         .category-title { padding: 20px 20px 10px; font-size: 16px; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 8px; }
         .category-title i { color: var(--primary); }
         .menu-container { padding: 0 15px; display: flex; flex-direction: column; gap: 12px; }
@@ -49,20 +39,17 @@
         .menu-desc { font-size: 12px; color: var(--muted); margin-bottom: 8px; line-height: 1.4; }
         .menu-price { font-size: 14px; font-weight: 800; color: var(--primary); }
         
-        /* Qty Control */
         .qty-control { display: flex; align-items: center; gap: 10px; background: var(--bg); padding: 5px; border-radius: 20px; border: 1px solid var(--border); }
         .qty-btn { width: 28px; height: 28px; border-radius: 50%; border: none; background: var(--white); color: var(--dark); font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .qty-btn:active { transform: scale(0.95); }
         .qty-value { font-size: 14px; font-weight: 700; width: 20px; text-align: center; }
 
-        /* Sticky Bottom Cart */
         .cart-bottom { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; z-index: 100; border-top: 1px solid var(--border); }
         .cart-total h4 { font-size: 12px; color: var(--muted); font-weight: 600; }
         .cart-total h2 { font-size: 20px; color: var(--dark); font-weight: 800; }
         .btn-checkout { background: var(--wa); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: opacity 0.3s; }
         .btn-checkout:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-        /* Modal Info Pelanggan */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; justify-content: center; align-items: flex-end; }
         .modal.active { display: flex; animation: fadeIn 0.3s; }
         .modal-content { background: var(--white); width: 100%; max-width: 500px; padding: 25px; border-radius: 20px 20px 0 0; animation: slideUp 0.3s; }
@@ -109,6 +96,9 @@
     <div class="category-title"><i class="fa-solid fa-mug-hot"></i> Menu Tekwan</div>
     <div class="menu-container" id="menu-tekwan"></div>
 
+    <div class="category-title"><i class="fa-solid fa-snowflake" style="color: #0ea5e9;"></i> Menu Frozen (Vakum)</div>
+    <div class="menu-container" id="menu-frozen"></div>
+
     <div style="height: 40px;"></div>
 
     <div class="cart-bottom">
@@ -125,7 +115,7 @@
 <div class="modal" id="orderModal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></span>
-        <h3 style="margin-bottom: 20px; color: var(--dark);">Detail Pengiriman</h3>
+        <h3 style="margin-bottom: 20px; color: var(--dark);">Detail Pesanan</h3>
         
         <div class="form-group">
             <label>Nama Pemesan</label>
@@ -136,20 +126,21 @@
             <label>Tipe Pesanan</label>
             <select id="custDelivery" class="form-control" onchange="toggleAddress()">
                 <option value="🛵 Antar ke Alamat">🛵 Antar ke Alamat</option>
-                <option value="🏪 Ambil Sendiri di Resto">🏪 Ambil Sendiri di Resto</option>
+                <option value="🏪 Bungkus / Bawa Pulang">🏪 Bungkus / Bawa Pulang</option>
+                <option value="🍽️ Makan di Tempat">🍽️ Makan di Tempat (Ruko)</option>
             </select>
         </div>
 
         <div class="form-group" id="addressGroup">
-            <label>Alamat Lengkap / Patokan</label>
-            <textarea id="custAddress" class="form-control" rows="3" placeholder="Contoh: Jl. Merdeka No.10 (Pagar Hitam)"></textarea>
+            <label id="addressLabel">Alamat Lengkap / Patokan</label>
+            <textarea id="custAddress" class="form-control" rows="2" placeholder="Contoh: Jl. Merdeka No.10"></textarea>
         </div>
         
         <div class="form-group">
             <label>Metode Pembayaran</label>
             <select id="custPayment" class="form-control">
+                <option value="Cash / Tunai">💵 Cash / Tunai di Kasir</option>
                 <option value="QRIS / Transfer Bank">📱 QRIS / Transfer Bank</option>
-                <option value="Cash / Tunai">💵 Cash / Tunai (Bayar di Tempat)</option>
             </select>
         </div>
         <div class="form-group">
@@ -164,7 +155,7 @@
 </div>
 
 <script>
-    // 1. INISIALISASI FIREBASE (Menyambungkan ke Database-mu)
+    // 1. INISIALISASI FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyCZONKYX2sXBaCsIvZU6Nmd9r7b6KYgxhk",
         authDomain: "pempek-dan-tekwan-ibu-ita.firebaseapp.com",
@@ -176,22 +167,32 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Data Menu
+    // DAFTAR MENU (Ditambah Kategori Frozen)
     const menuData = [
+        // Menu Satuan
         { id: 'p_telur', name: 'Pempek Telur Kecil', desc: 'Isian telur kocok', price: 3000, category: 'satuan' },
         { id: 'p_lenjer', name: 'Pempek Lenjer', desc: 'Bentuk panjang original', price: 3000, category: 'satuan' },
         { id: 'p_adaan', name: 'Pempek Adaan', desc: 'Bentuk bulat gurih', price: 3000, category: 'satuan' },
         { id: 'p_keriting', name: 'Pempek Keriting', desc: 'Tekstur keriting renyah', price: 3000, category: 'satuan' },
         { id: 'p_kulit', name: 'Pempek Kulit', desc: 'Renyah dari kulit ikan', price: 3000, category: 'satuan' },
+        
+        // Menu Premium
         { id: 'p_kapal', name: 'Pempek Kapal Selam', desc: 'Ukuran besar isi telur utuh', price: 18000, category: 'premium' },
+        
+        // Menu Tekwan
         { id: 't_biasa', name: 'Tekwan', desc: 'Sup bola ikan kuah kaldu udang', price: 12000, category: 'tekwan' },
         { id: 't_indomie', name: 'Tekwan Indomie', desc: 'Paduan tekwan lezat dengan mi instan', price: 17000, category: 'tekwan' },
+
+        // Menu Frozen (BARU)
+        { id: 'f_campur', name: 'Frozen Pempek Campur (Isi 5)', desc: '1 Paket isi 5 pempek kecil campur (Kemasan Vakum)', price: 15000, category: 'frozen' },
+        { id: 'f_lenjer', name: 'Frozen Pempek Lenjer (Isi 5)', desc: '1 Paket isi 5 pempek lenjer kecil (Kemasan Vakum)', price: 15000, category: 'frozen' }
     ];
 
     let cart = {};
 
     function renderMenu() {
-        ['satuan', 'premium', 'tekwan'].forEach(cat => {
+        // Tambahkan 'frozen' ke dalam looping kategori
+        ['satuan', 'premium', 'tekwan', 'frozen'].forEach(cat => {
             const container = document.getElementById(`menu-${cat}`);
             const items = menuData.filter(m => m.category === cat);
             
@@ -245,11 +246,20 @@
         const deliveryType = document.getElementById('custDelivery').value;
         const addressGroup = document.getElementById('addressGroup');
         const addressInput = document.getElementById('custAddress');
-        if(deliveryType === "🏪 Ambil Sendiri di Resto") {
+        const addressLabel = document.getElementById('addressLabel');
+        
+        if(deliveryType === "🏪 Bungkus / Bawa Pulang") {
             addressGroup.style.display = "none";
-            addressInput.value = "Ambil Sendiri"; 
+            addressInput.value = "Bungkus / Takeaway"; 
+        } else if (deliveryType === "🍽️ Makan di Tempat") {
+            addressGroup.style.display = "block";
+            addressLabel.innerText = "Nomor Meja (Boleh dikosongkan)";
+            addressInput.placeholder = "Contoh: Meja 4 / Duduk di pojok";
+            addressInput.value = ""; 
         } else {
             addressGroup.style.display = "block";
+            addressLabel.innerText = "Alamat Lengkap / Patokan";
+            addressInput.placeholder = "Contoh: Jl. Merdeka No.10 (Pagar Hitam)";
             addressInput.value = ""; 
         }
     }
@@ -257,20 +267,18 @@
     function openModal() { document.getElementById('orderModal').classList.add('active'); }
     function closeModal() { document.getElementById('orderModal').classList.remove('active'); }
 
-    // 2. PROSES PENGIRIMAN DATA KE FIREBASE & WHATSAPP
     function kirimKeWA() {
         const name = document.getElementById('custName').value;
         const delivery = document.getElementById('custDelivery').value;
-        const address = document.getElementById('custAddress').value;
+        const address = document.getElementById('custAddress').value || '-';
         const payment = document.getElementById('custPayment').value;
         const note = document.getElementById('custNote').value;
 
-        if(!name || !address) {
-            alert('Mohon lengkapi Nama dan Alamat!');
+        if(!name) {
+            alert('Mohon isi Nama Pemesan!');
             return;
         }
 
-        // Tampilan Loading pada tombol
         const btnSubmit = document.getElementById('btnSubmitForm');
         const originalBtnText = btnSubmit.innerHTML;
         btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses Pesanan...';
@@ -285,17 +293,10 @@
                 let subtotal = cart[item.id] * item.price;
                 orderList += `▪️ ${cart[item.id]}x ${item.name} (Rp ${subtotal.toLocaleString('id-ID')})\n`;
                 total += subtotal;
-                
-                // Data khusus untuk masuk ke Firebase Database
-                orderItemsForDB.push({
-                    namaMenu: item.name,
-                    qty: cart[item.id],
-                    subtotal: subtotal
-                });
+                orderItemsForDB.push({ namaMenu: item.name, qty: cart[item.id], subtotal: subtotal });
             }
         });
 
-        // Simpan Data ke Firebase Firestore (Collection: orders)
         db.collection("orders").add({
             namaPelanggan: name,
             tipePesanan: delivery,
@@ -306,36 +307,36 @@
             totalBelanja: total,
             tanggalOrder: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
-            // Setelah berhasil disimpan ke Database, luncurkan WhatsApp
             lanjutKeWhatsApp(name, delivery, address, payment, note, orderList, total);
         }).catch((error) => {
-            console.error("Gagal menyimpan ke database: ", error);
-            // Kalau misal internet pembeli jelek, tetap arahkan ke WA agar jualan tidak gagal
             lanjutKeWhatsApp(name, delivery, address, payment, note, orderList, total);
         }).finally(() => {
-            // Kembalikan tombol seperti semula
             btnSubmit.innerHTML = originalBtnText;
             btnSubmit.disabled = false;
         });
     }
 
-    // Fungsi khusus membuat pesan WhatsApp
     function lanjutKeWhatsApp(name, delivery, address, payment, note, orderList, total) {
         const waNumber = "6289508573323"; 
+        
+        let addressText = "";
+        if(delivery === "🛵 Antar ke Alamat") {
+            addressText = `📍 Alamat: ${address}\n`;
+        } else if (delivery === "🍽️ Makan di Tempat") {
+            addressText = `🪑 Lokasi: ${address}\n`;
+        }
+
         let paymentMessage = payment === "QRIS / Transfer Bank" 
             ? "(Mohon kirimkan bukti transfer/QRIS untuk pembayarannya ya)" 
-            : "(Pembayaran akan dilakukan secara tunai)";
-            
-        let addressText = delivery === "🛵 Antar ke Alamat" ? `📍 Alamat: ${address}\n` : "";
+            : "(Akan dibayar tunai di kasir)";
 
-        const textMessage = `*HALO IBU ITA, SAYA MAU PESAN Eceran:* 🐟\n\n` +
-            `*DATA PEMESAN:*\n👤 Nama: ${name}\n📦 Tipe Pesanan: ${delivery}\n${addressText}💳 Metode Bayar: ${payment}\n📝 Catatan: ${note || '-'}\n\n` +
+        const textMessage = `*HALO IBU ITA, ADA PESANAN BARU:* 🐟\n\n` +
+            `*DATA PEMESAN:*\n👤 Nama: ${name}\n📦 Tipe: ${delivery}\n${addressText}💳 Bayar: ${payment}\n📝 Catatan: ${note || '-'}\n\n` +
             `*DETAIL PESANAN:*\n${orderList}\n*TOTAL BELANJA: Rp ${total.toLocaleString('id-ID')}*\n\n${paymentMessage}`;
 
         window.location.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(textMessage)}`;
     }
 
-    // Init Menu Awal
     renderMenu();
 </script>
 
