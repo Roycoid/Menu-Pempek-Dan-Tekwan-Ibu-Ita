@@ -167,7 +167,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // DAFTAR MENU (Ditambah Kategori Frozen)
+    // DAFTAR MENU LENGKAP
     const menuData = [
         // Menu Satuan
         { id: 'p_telur', name: 'Pempek Telur Kecil', desc: 'Isian telur kocok', price: 3000, category: 'satuan' },
@@ -183,15 +183,19 @@
         { id: 't_biasa', name: 'Tekwan', desc: 'Sup bola ikan kuah kaldu udang', price: 12000, category: 'tekwan' },
         { id: 't_indomie', name: 'Tekwan Indomie', desc: 'Paduan tekwan lezat dengan mi instan', price: 17000, category: 'tekwan' },
 
-        // Menu Frozen (BARU)
-        { id: 'f_campur', name: 'Frozen Pempek Campur (Isi 5)', desc: '1 Paket isi 5 pempek kecil campur (Kemasan Vakum)', price: 15000, category: 'frozen' },
-        { id: 'f_lenjer', name: 'Frozen Pempek Lenjer (Isi 5)', desc: '1 Paket isi 5 pempek lenjer kecil (Kemasan Vakum)', price: 15000, category: 'frozen' }
+        // Menu Frozen (Paket Kecil isi 5 & Kapal Selam Satuan)
+        { id: 'f_campur', name: 'Frozen Pempek Campur', desc: '1 Paket isi 5 pcs campur (Vakum)', price: 15000, category: 'frozen' },
+        { id: 'f_telur', name: 'Frozen Telur Kecil', desc: '1 Paket isi 5 pcs (Vakum)', price: 15000, category: 'frozen' },
+        { id: 'f_lenjer', name: 'Frozen Lenjer', desc: '1 Paket isi 5 pcs (Vakum)', price: 15000, category: 'frozen' },
+        { id: 'f_adaan', name: 'Frozen Adaan', desc: '1 Paket isi 5 pcs (Vakum)', price: 15000, category: 'frozen' },
+        { id: 'f_keriting', name: 'Frozen Keriting', desc: '1 Paket isi 5 pcs (Vakum)', price: 15000, category: 'frozen' },
+        { id: 'f_kulit', name: 'Frozen Kulit', desc: '1 Paket isi 5 pcs (Vakum)', price: 15000, category: 'frozen' },
+        { id: 'f_kapal', name: 'Frozen Kapal Selam', desc: '1 Pcs ukuran besar isi telur utuh (Vakum)', price: 18000, category: 'frozen' }
     ];
 
     let cart = {};
 
     function renderMenu() {
-        // Tambahkan 'frozen' ke dalam looping kategori
         ['satuan', 'premium', 'tekwan', 'frozen'].forEach(cat => {
             const container = document.getElementById(`menu-${cat}`);
             const items = menuData.filter(m => m.category === cat);
