@@ -175,19 +175,24 @@
         { id: 'p_adaan', name: 'Pempek Adaan', desc: 'Bentuk bulat gurih', price: 3000, category: 'satuan' },
         { id: 'p_keriting', name: 'Pempek Keriting', desc: 'Tekstur keriting renyah', price: 3000, category: 'satuan' },
         { id: 'p_kulit', name: 'Pempek Kulit', desc: 'Renyah dari kulit ikan', price: 3000, category: 'satuan' },
-        
-        // PAKET PORTI + MIE DENGAN PILIHAN VARIAN INTERAKTIF
         { 
             id: 'p_porsi_mie', 
             name: 'Paket 1 Porsi + Mie', 
             desc: 'Porsi pempek lengkap dengan mie kuning segar. Pilih varian favoritmu di bawah:', 
             price: 15000, 
             category: 'satuan',
-            variants: ['Mix', 'Lenjer', 'Adaan', 'Telur Kecil', 'Kulit'] // VARIAN BARU
+            variants: ['Mix', 'Lenjer', 'Adaan', 'Telur Kecil', 'Kulit'] 
         },
         
-        // Menu Premium
-        { id: 'p_kapal', name: 'Pempek Kapal Selam', desc: 'Ukuran besar isi telur utuh', price: 18000, category: 'premium' },
+        // Menu Premium dengan Opsi Tambahan Mie (BARU)
+        { 
+            id: 'p_kapal', 
+            name: 'Pempek Kapal Selam', 
+            desc: 'Ukuran besar isi telur utuh lezat. Pilih opsi penyajian:', 
+            price: 18000, 
+            category: 'premium',
+            variants: ['Non Mie', '+Mie'] // VARIAN BARU KAPAL SELAM
+        },
         
         // Menu Tekwan
         { id: 't_biasa', name: 'Tekwan', desc: 'Sup bola ikan kuah kaldu udang', price: 12000, category: 'tekwan' },
@@ -204,7 +209,7 @@
     ];
 
     let cart = {};
-    let selectedVariants = {}; // Menyimpan data varian yang dipilih konsumen
+    let selectedVariants = {}; 
 
     function renderMenu() {
         ['satuan', 'premium', 'tekwan', 'frozen'].forEach(cat => {
@@ -214,17 +219,14 @@
             items.forEach(item => {
                 cart[item.id] = 0; 
                 
-                // Set default varian (pilih varian pertama secara otomatis)
                 if(item.variants) {
                     selectedVariants[item.id] = item.variants[0];
                 }
 
-                // Bangun struktur tombol pilihan varian jika menunya memiliki daftar varian
                 let variantsHtml = '';
                 if(item.variants) {
                     variantsHtml = `<div style="margin: 8px 0 4px; display: flex; flex-wrap: wrap; gap: 5px;">`;
                     item.variants.forEach((v, index) => {
-                        // Jika index 0 (Mix), otomatis aktif duluan warna kuning, sisanya abu-abu
                         const bgStyle = index === 0 ? 'background: #fef3c7; color: #b45309; border-color: #fde68a;' : 'background: #f1f5f9; color: #475569; border-color: #e2e8f0;';
                         variantsHtml += `
                             <span class="pill-${item.id}" id="pill-${item.id}-${v}" onclick="selectVariant('${item.id}', '${v}')" style="font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700; cursor: pointer; border: 1px solid; ${bgStyle} transition: 0.2s; display: inline-flex; align-items: center; gap: 4px;">
@@ -254,11 +256,9 @@
         });
     }
 
-    // FUNGSI INTERAKTIF: Mengatur pergantian warna tombol varian saat diklik
     function selectVariant(itemId, variantName) {
         const item = menuData.find(m => m.id === itemId);
         
-        // Reset semua tombol varian di menu tersebut ke warna abu-abu
         item.variants.forEach(v => {
             const pill = document.getElementById(`pill-${itemId}-${v}`);
             pill.style.background = '#f1f5f9';
@@ -267,14 +267,12 @@
             pill.querySelector('i').style.opacity = '0';
         });
 
-        // Nyalakan warna kuning emas pada tombol varian yang diklik
         const activePill = document.getElementById(`pill-${itemId}-${variantName}`);
         activePill.style.background = '#fef3c7';
         activePill.style.color = '#b45309';
         activePill.style.borderColor = '#fde68a';
         activePill.querySelector('i').style.opacity = '1';
         
-        // Kunci pilihan ke dalam memory sistem
         selectedVariants[itemId] = variantName;
     }
 
@@ -351,7 +349,6 @@
 
         menuData.forEach(item => {
             if(cart[item.id] > 0) {
-                // Tambahkan keterangan varian di belakang nama menu jika ada pilihan varian
                 let variantText = selectedVariants[item.id] ? ` (${selectedVariants[item.id]})` : '';
                 let namaMenuLengkap = item.name + variantText;
 
