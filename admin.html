@@ -18,8 +18,9 @@
         .header h1 { font-size: 20px; color: #0f172a; }
         .header .badge { background: #d97706; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: 600; }
         .header .badge-mitra { background: #059669; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+        .header .badge-pengeluaran { background: #ef4444; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: 600; }
 
-        /* Tabel Styling */
+        /* Tabel & Container Styling */
         .table-container { background: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow-x: auto; margin-bottom: 40px; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 15px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
@@ -31,21 +32,82 @@
         .tipe-bungkus { background-color: #f3e8ff; color: #6b21a8; }
         .tipe-makan { background-color: #fce7f3; color: #9d174d; }
         .tipe-paket { background-color: #d1fae5; color: #065f46; font-weight: 700; }
+        .tipe-pengeluaran { background-color: #fee2e2; color: #b91c1c; font-weight: 700; }
 
         .total-harga { font-weight: 700; color: #059669; }
+        .minus-harga { font-weight: 700; color: #ef4444; }
         .menu-list { list-style-type: none; font-size: 13px; color: #64748b; }
         .menu-list li { margin-bottom: 3px; }
-        
         .loading { text-align: center; padding: 50px; color: #64748b; }
+
+        /* Form Styling untuk Admin */
+        .form-box { padding: 25px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #0f172a; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; }
+        .form-control:focus { border-color: #d97706; }
+        .btn-simpan { background: #ef4444; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .btn-simpan:hover { background: #dc2626; }
+        .btn-simpan:disabled { background: #fca5a5; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1><i class="fa-solid fa-chart-line" style="color:#d97706;"></i> Data Pesanan (Ruko & Online)</h1>
-        <div class="badge" id="totalOrders">0 Pesanan</div>
+        <h1><i class="fa-solid fa-money-bill-transfer" style="color:#ef4444;"></i> Catat Belanja & Pengeluaran</h1>
+    </div>
+    <div class="table-container form-box">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div class="form-group">
+                <label>Nama Barang / Keterangan</label>
+                <input type="text" id="namaPengeluaran" class="form-control" placeholder="Cth: Ikan Tenggiri 5kg / Listrik">
+            </div>
+            <div class="form-group">
+                <label>Kategori</label>
+                <select id="kategoriPengeluaran" class="form-control">
+                    <option value="Bahan Baku">🐟 Bahan Baku (Ikan, Sagu, Bumbu)</option>
+                    <option value="Kemasan">📦 Kemasan (Plastik, Dus, Mika)</option>
+                    <option value="Operasional">🛵 Operasional (Listrik, Bensin, Gaji)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Total Harga (Rp)</label>
+                <input type="number" id="nominalPengeluaran" class="form-control" placeholder="Cth: 150000">
+            </div>
+        </div>
+        <button id="btnSimpanPengeluaran" class="btn-simpan" onclick="simpanPengeluaran()">
+            <i class="fa-solid fa-floppy-disk"></i> Simpan Data Pengeluaran
+        </button>
     </div>
 
+    <div class="header">
+        <h1><i class="fa-solid fa-receipt" style="color:#ef4444;"></i> Riwayat Pengeluaran</h1>
+        <div class="badge-pengeluaran" id="totalPengeluaranBadge">Rp 0</div>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Waktu Input</th>
+                    <th>Nama Barang / Keterangan</th>
+                    <th>Kategori</th>
+                    <th>Nominal Pengeluaran</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tableBodyPengeluaran">
+                <tr><td colspan="5" class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Memuat data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="header" style="align-items: flex-start;">
+        <div>
+            <h1><i class="fa-solid fa-chart-line" style="color:#d97706;"></i> Data Pesanan (Ruko & Online)</h1>
+            <a href="index.html" target="_blank" style="display:inline-block; margin-top:10px; background:#0ea5e9; color:white; padding:8px 15px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:600;"><i class="fa-solid fa-cash-register"></i> Buka Kasir Utama</a>
+        </div>
+        <div class="badge" id="totalOrders">0 Pesanan</div>
+    </div>
     <div class="table-container">
         <table>
             <thead>
@@ -59,7 +121,7 @@
                 </tr>
             </thead>
             <tbody id="tableBodyOrders">
-                <tr><td colspan="6" class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Memuat data pesanan...</td></tr>
+                <tr><td colspan="6" class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Memuat data...</td></tr>
             </tbody>
         </table>
     </div>
@@ -68,7 +130,6 @@
         <h1><i class="fa-solid fa-handshake" style="color:#059669;"></i> Data Pendaftaran Mitra / Reseller</h1>
         <div class="badge-mitra" id="totalReseller">0 Pendaftar</div>
     </div>
-
     <div class="table-container">
         <table>
             <thead>
@@ -80,7 +141,7 @@
                 </tr>
             </thead>
             <tbody id="tableBodyReseller">
-                <tr><td colspan="4" class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Memuat data reseller...</td></tr>
+                <tr><td colspan="4" class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Memuat data...</td></tr>
             </tbody>
         </table>
     </div>
@@ -97,97 +158,131 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // TARIK DATA PESANAN
+    // ==========================================
+    // SCRIPT 1: PENGELUARAN BAHAN BAKU (BARU)
+    // ==========================================
+    function simpanPengeluaran() {
+        const nama = document.getElementById('namaPengeluaran').value;
+        const kategori = document.getElementById('kategoriPengeluaran').value;
+        const nominal = parseInt(document.getElementById('nominalPengeluaran').value);
+
+        if(!nama || !nominal || isNaN(nominal)) {
+            alert("Mohon isi Nama Barang dan Nominal Harga yang valid!");
+            return;
+        }
+
+        const btn = document.getElementById('btnSimpanPengeluaran');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+        btn.disabled = true;
+
+        db.collection("pengeluaran").add({
+            namaBarang: nama,
+            kategori: kategori,
+            nominal: nominal,
+            tanggalInput: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            alert("Pengeluaran berhasil dicatat!");
+            document.getElementById('namaPengeluaran').value = '';
+            document.getElementById('nominalPengeluaran').value = '';
+        }).catch((error) => {
+            console.error("Error: ", error);
+            alert("Gagal menyimpan data.");
+        }).finally(() => {
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Data Pengeluaran';
+            btn.disabled = false;
+        });
+    }
+
+    const tableBodyPengeluaran = document.getElementById('tableBodyPengeluaran');
+    const totalPengeluaranBadge = document.getElementById('totalPengeluaranBadge');
+
+    db.collection("pengeluaran").orderBy("tanggalInput", "desc").onSnapshot((querySnapshot) => {
+        tableBodyPengeluaran.innerHTML = ""; 
+        let totalNominal = 0;
+
+        if(querySnapshot.empty) {
+            tableBodyPengeluaran.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px;">Belum ada data pengeluaran.</td></tr>`;
+        } else {
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const docId = doc.id;
+                totalNominal += data.nominal || 0;
+                
+                let waktuInput = "Waktu tidak diketahui";
+                if(data.tanggalInput) {
+                    waktuInput = data.tanggalInput.toDate().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${waktuInput}</td>
+                    <td><strong>${data.namaBarang}</strong></td>
+                    <td><span class="tipe-pesanan tipe-pengeluaran">${data.kategori}</span></td>
+                    <td class="minus-harga">- Rp ${(data.nominal || 0).toLocaleString('id-ID')}</td>
+                    <td><button onclick="hapusPengeluaran('${docId}')" style="background:none; border:none; color:#ef4444; cursor:pointer;" title="Hapus"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tableBodyPengeluaran.appendChild(tr);
+            });
+        }
+        totalPengeluaranBadge.innerText = `Total: Rp ${totalNominal.toLocaleString('id-ID')}`;
+    });
+
+    function hapusPengeluaran(id) {
+        if(confirm("Apakah Anda yakin ingin menghapus data pengeluaran ini?")) {
+            db.collection("pengeluaran").doc(id).delete();
+        }
+    }
+
+    // ==========================================
+    // SCRIPT 2 & 3: PESANAN & MITRA (TETAP SAMA)
+    // ==========================================
     const tableBodyOrders = document.getElementById('tableBodyOrders');
     const totalOrdersBadge = document.getElementById('totalOrders');
 
     db.collection("orders").orderBy("tanggalOrder", "desc").onSnapshot((querySnapshot) => {
-        tableBodyOrders.innerHTML = ""; 
-        let counterOrders = 0;
-
+        tableBodyOrders.innerHTML = ""; let counterOrders = 0;
         if(querySnapshot.empty) {
             tableBodyOrders.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px;">Belum ada data pesanan.</td></tr>`;
         } else {
             querySnapshot.forEach((doc) => {
-                counterOrders++;
-                const data = doc.data();
-                
-                let waktuOrder = "Waktu tidak diketahui";
-                if(data.tanggalOrder) {
-                    const dateObj = data.tanggalOrder.toDate();
-                    waktuOrder = dateObj.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
-                }
-
-                // Logika Pintar Memisahkan Tipe & Tampilan Detail Lokasi di Admin
-                let tipeClass = "";
-                let detailLokasiHtml = "";
+                counterOrders++; const data = doc.data();
+                let waktuOrder = data.tanggalOrder ? data.tanggalOrder.toDate().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : "-";
+                let tipeClass = ""; let detailLokasiHtml = "";
 
                 if (data.tipePesanan.includes("Antar")) {
-                    tipeClass = "tipe-antar";
-                    detailLokasiHtml = `<div style="margin-top:5px; font-size:12px; color:#64748b;">📍 Alamat: ${data.alamatPengiriman}</div>`;
+                    tipeClass = "tipe-antar"; detailLokasiHtml = `<div style="margin-top:5px; font-size:12px; color:#64748b;">📍 Alamat: ${data.alamatPengiriman}</div>`;
                 } else if (data.tipePesanan.includes("Tempat")) {
-                    tipeClass = "tipe-makan";
-                    detailLokasiHtml = `<div style="margin-top:5px; font-size:12px; color:#c2185b; font-weight:600;">🪑 ${data.alamatPengiriman || 'Meja tidak diisi'}</div>`;
+                    tipeClass = "tipe-makan"; detailLokasiHtml = `<div style="margin-top:5px; font-size:12px; color:#c2185b; font-weight:600;">🪑 ${data.alamatPengiriman || 'Meja tidak diisi'}</div>`;
                 } else {
-                    tipeClass = "tipe-bungkus";
-                    detailLokasiHtml = `<div style="margin-top:5px; font-size:12px; color:#6b21a8;">🛍️ Dibungkus (Takeaway)</div>`;
+                    tipeClass = "tipe-bungkus"; detailLokasiHtml = `<div style="margin-top:5px; font-size:12px; color:#6b21a8;">🛍️ Dibungkus (Takeaway)</div>`;
                 }
 
                 let menuHtml = '<ul class="menu-list">';
-                if(data.daftarPesanan && data.daftarPesanan.length > 0) {
-                    data.daftarPesanan.forEach(item => {
-                        menuHtml += `<li>${item.qty}x ${item.namaMenu}</li>`;
-                    });
-                }
+                if(data.daftarPesanan) data.daftarPesanan.forEach(item => { menuHtml += `<li>${item.qty}x ${item.namaMenu}</li>`; });
                 menuHtml += '</ul>';
 
-                // Tampilkan catatan opsional jika ada
-                let catatanHtml = data.catatanTambahan && data.catatanTambahan !== '-' 
-                    ? `<div style="font-size:11px; color:#b45309; margin-top:4px;">📝_Catatan: "${data.catatanTambahan}"</div>` 
-                    : '';
+                let catatanHtml = data.catatanTambahan && data.catatanTambahan !== '-' ? `<div style="font-size:11px; color:#b45309; margin-top:4px;">📝_Catatan: "${data.catatanTambahan}"</div>` : '';
 
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${waktuOrder}</td>
-                    <td><strong>${data.namaPelanggan}</strong>${catatanHtml}</td>
-                    <td><span class="tipe-pesanan ${tipeClass}">${data.tipePesanan}</span>${detailLokasiHtml}</td>
-                    <td>${menuHtml}</td>
-                    <td>${data.metodePembayaran}</td>
-                    <td class="total-harga">Rp ${data.totalBelanja.toLocaleString('id-ID')}</td>
-                `;
+                tr.innerHTML = `<td>${waktuOrder}</td><td><strong>${data.namaPelanggan}</strong>${catatanHtml}</td><td><span class="tipe-pesanan ${tipeClass}">${data.tipePesanan}</span>${detailLokasiHtml}</td><td>${menuHtml}</td><td>${data.metodePembayaran}</td><td class="total-harga">Rp ${data.totalBelanja.toLocaleString('id-ID')}</td>`;
                 tableBodyOrders.appendChild(tr);
             });
         }
         totalOrdersBadge.innerText = `${counterOrders} Pesanan`;
     });
 
-    // TARIK DATA MITRA
     const tableBodyReseller = document.getElementById('tableBodyReseller');
     const totalResellerBadge = document.getElementById('totalReseller');
-
     db.collection("calon_mitra").onSnapshot((querySnapshot) => {
-        tableBodyReseller.innerHTML = ""; 
-        let counterReseller = 0;
-
+        tableBodyReseller.innerHTML = ""; let counterReseller = 0;
         if(querySnapshot.empty) {
             tableBodyReseller.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px;">Belum ada data pendaftar mitra.</td></tr>`;
         } else {
             querySnapshot.forEach((doc) => {
-                counterReseller++;
-                const data = doc.data();
-                
-                let waktuDaftar = data.waktuDaftar || "Waktu tidak diketahui";
-                if(data.waktuDaftar && typeof data.waktuDaftar.toDate === 'function') {
-                    waktuDaftar = data.waktuDaftar.toDate().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
-                }
-
+                counterReseller++; const data = doc.data();
+                let waktuDaftar = (data.waktuDaftar && typeof data.waktuDaftar.toDate === 'function') ? data.waktuDaftar.toDate().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : (data.waktuDaftar || "-");
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${waktuDaftar}</td>
-                    <td><strong>${data.nama || '-'}</strong></td>
-                    <td>${data.domisili || '-'}</td>
-                    <td><span class="tipe-pesanan tipe-paket">${data.paket || '-'}</span></td>
-                `;
+                tr.innerHTML = `<td>${waktuDaftar}</td><td><strong>${data.nama || '-'}</strong></td><td>${data.domisili || '-'}</td><td><span class="tipe-pesanan tipe-paket">${data.paket || '-'}</span></td>`;
                 tableBodyReseller.appendChild(tr);
             });
         }
