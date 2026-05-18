@@ -28,11 +28,27 @@
         .promo-text { flex: 1; }
         .promo-text strong { font-size: 14px; font-weight: 800; color: #b45309; display: block; margin-bottom: 2px; }
         .promo-text p { font-size: 11px; color: #92400e; line-height: 1.4; }
-        .promo-reseller-banner .chevron { color: #d97706; font-size: 16px; }
 
-        .category-title { padding: 20px 20px 10px; font-size: 16px; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+        /* FITUR BARU: MENU ICON NAV (Gaya GoFood) */
+        .quick-nav-wrapper { padding: 0 0 10px 15px; }
+        .quick-nav { display: flex; gap: 12px; overflow-x: auto; scroll-behavior: smooth; padding-right: 15px; padding-bottom: 10px; }
+        .quick-nav::-webkit-scrollbar { display: none; } /* Hide scrollbar */
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 6px; border: none; background: none; cursor: pointer; min-width: 65px; transition: 0.2s; }
+        .nav-item:active { transform: scale(0.9); }
+        .nav-icon { width: 55px; height: 55px; background: var(--white); border-radius: 18px; display: flex; justify-content: center; align-items: center; font-size: 22px; color: var(--muted); box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border); transition: 0.3s; }
+        .nav-text { font-size: 11px; font-weight: 600; color: var(--muted); text-align: center; line-height: 1.2; }
+        
+        /* State saat Icon Aktif Ditekan */
+        .nav-item.active .nav-icon { background: var(--primary); color: var(--white); border-color: var(--primary); box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3); }
+        .nav-item.active .nav-text { color: var(--primary); font-weight: 800; }
+
+        /* ANIMASI FILTER MENU */
+        .menu-section { display: block; animation: fadeIn 0.4s; }
+        .menu-section.hidden { display: none; }
+
+        .category-title { padding: 15px 20px 10px; font-size: 16px; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 8px; }
         .category-title i { color: var(--primary); }
-        .menu-container { padding: 0 15px; display: flex; flex-direction: column; gap: 12px; }
+        .menu-container { padding: 0 15px 15px; display: flex; flex-direction: column; gap: 12px; }
         .menu-item { background: var(--white); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .menu-info { flex: 1; padding-right: 10px; }
         .menu-name { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
@@ -87,20 +103,59 @@
         <i class="fa-solid fa-chevron-right chevron"></i>
     </a>
 
-    <div class="category-title"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Paket Bundling Anak Kos</div>
-    <div class="menu-container" id="menu-bundling"></div>
+    <div class="quick-nav-wrapper">
+        <div class="quick-nav">
+            <button class="nav-item active" id="nav-all" onclick="filterMenu('all')">
+                <div class="nav-icon"><i class="fa-solid fa-border-all"></i></div>
+                <span class="nav-text">Semua</span>
+            </button>
+            <button class="nav-item" id="nav-bundling" onclick="filterMenu('bundling')">
+                <div class="nav-icon"><i class="fa-solid fa-star" style="color: #f59e0b;"></i></div>
+                <span class="nav-text">Paket<br>Kos</span>
+            </button>
+            <button class="nav-item" id="nav-satuan" onclick="filterMenu('satuan')">
+                <div class="nav-icon"><i class="fa-solid fa-fish"></i></div>
+                <span class="nav-text">Satuan</span>
+            </button>
+            <button class="nav-item" id="nav-premium" onclick="filterMenu('premium')">
+                <div class="nav-icon"><i class="fa-solid fa-egg"></i></div>
+                <span class="nav-text">Premium</span>
+            </button>
+            <button class="nav-item" id="nav-tekwan" onclick="filterMenu('tekwan')">
+                <div class="nav-icon"><i class="fa-solid fa-mug-hot"></i></div>
+                <span class="nav-text">Tekwan</span>
+            </button>
+            <button class="nav-item" id="nav-frozen" onclick="filterMenu('frozen')">
+                <div class="nav-icon"><i class="fa-solid fa-snowflake" style="color: #0ea5e9;"></i></div>
+                <span class="nav-text">Frozen</span>
+            </button>
+        </div>
+    </div>
 
-    <div class="category-title"><i class="fa-solid fa-fish"></i> Pempek Satuan</div>
-    <div class="menu-container" id="menu-satuan"></div>
+    <div id="section-bundling" class="menu-section">
+        <div class="category-title"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Paket Bundling Anak Kos</div>
+        <div class="menu-container" id="menu-bundling"></div>
+    </div>
 
-    <div class="category-title"><i class="fa-solid fa-egg"></i> Pempek Premium</div>
-    <div class="menu-container" id="menu-premium"></div>
+    <div id="section-satuan" class="menu-section">
+        <div class="category-title"><i class="fa-solid fa-fish"></i> Pempek Satuan</div>
+        <div class="menu-container" id="menu-satuan"></div>
+    </div>
 
-    <div class="category-title"><i class="fa-solid fa-mug-hot"></i> Menu Tekwan</div>
-    <div class="menu-container" id="menu-tekwan"></div>
+    <div id="section-premium" class="menu-section">
+        <div class="category-title"><i class="fa-solid fa-egg"></i> Pempek Premium</div>
+        <div class="menu-container" id="menu-premium"></div>
+    </div>
 
-    <div class="category-title"><i class="fa-solid fa-snowflake" style="color: #0ea5e9;"></i> Menu Frozen (Vakum)</div>
-    <div class="menu-container" id="menu-frozen"></div>
+    <div id="section-tekwan" class="menu-section">
+        <div class="category-title"><i class="fa-solid fa-mug-hot"></i> Menu Tekwan</div>
+        <div class="menu-container" id="menu-tekwan"></div>
+    </div>
+
+    <div id="section-frozen" class="menu-section">
+        <div class="category-title"><i class="fa-solid fa-snowflake" style="color: #0ea5e9;"></i> Menu Frozen (Vakum)</div>
+        <div class="menu-container" id="menu-frozen"></div>
+    </div>
 
     <div style="height: 40px;"></div>
 
@@ -170,9 +225,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 2. DATA MENU (TERMASUK KATEGORI BUNDLING BARU)
+    // 2. DATA MENU LENGKAP
     const menuData = [
-        // --- Kategori Baru: BUNDLING ---
         { id: 'b_hujan', name: 'Paket Combo Hujan', desc: '1 Tekwan Original + 2 Kulit Crispy', price: 18000, category: 'bundling' },
         { id: 'b_carbs', name: 'Paket Double Carbs', desc: '1 Tekwan Indomie + 2 Pempek Kecil', price: 23000, category: 'bundling' },
         { id: 'b_sultan', name: 'Paket Kenyang Sultan', desc: '1 Kapal Selam + 2 Pempek Kecil', price: 24000, category: 'bundling' },
@@ -180,36 +234,18 @@
         { id: 'b_mabar', name: 'Paket Mabar Berdua', desc: '2 Kapal Selam + 4 Pmk Kecil Campur', price: 48000, category: 'bundling' },
         { id: 'b_stok', name: 'Paket Stok Kulkas', desc: '10 pcs Pempek Kecil Frozen + Cuko', price: 30000, category: 'bundling' },
 
-        // --- Kategori: SATUAN ---
         { id: 'p_telur', name: 'Pempek Telur Kecil', desc: 'Isian telur kocok', price: 3000, category: 'satuan' },
         { id: 'p_lenjer', name: 'Pempek Lenjer', desc: 'Bentuk panjang original', price: 3000, category: 'satuan' },
         { id: 'p_adaan', name: 'Pempek Adaan', desc: 'Bentuk bulat gurih', price: 3000, category: 'satuan' },
         { id: 'p_keriting', name: 'Pempek Keriting', desc: 'Tekstur keriting renyah', price: 3000, category: 'satuan' },
         { id: 'p_kulit', name: 'Pempek Kulit', desc: 'Renyah dari kulit ikan', price: 3000, category: 'satuan' },
-        { 
-            id: 'p_porsi_mie', 
-            name: 'Paket 1 Porsi + Mie', 
-            desc: 'Porsi pempek lengkap dengan mie kuning segar. Pilih varian:', 
-            price: 15000, 
-            category: 'satuan',
-            variants: ['Mix', 'Lenjer', 'Adaan', 'Telur', 'Kulit'] 
-        },
+        { id: 'p_porsi_mie', name: 'Paket 1 Porsi + Mie', desc: 'Porsi pempek lengkap dengan mie kuning segar. Pilih varian:', price: 15000, category: 'satuan', variants: ['Mix', 'Lenjer', 'Adaan', 'Telur', 'Kulit'] },
         
-        // --- Kategori: PREMIUM ---
-        { 
-            id: 'p_kapal', 
-            name: 'Pempek Kapal Selam', 
-            desc: 'Ukuran besar isi telur utuh lezat. Pilih opsi:', 
-            price: 18000, 
-            category: 'premium',
-            variants: ['Non Mie', '+Mie'] 
-        },
+        { id: 'p_kapal', name: 'Pempek Kapal Selam', desc: 'Ukuran besar isi telur utuh lezat. Pilih opsi:', price: 18000, category: 'premium', variants: ['Non Mie', '+Mie'] },
         
-        // --- Kategori: TEKWAN ---
         { id: 't_biasa', name: 'Tekwan Original', desc: 'Sup bola ikan kuah kaldu udang', price: 12000, category: 'tekwan' },
         { id: 't_indomie', name: 'Tekwan Indomie', desc: 'Paduan tekwan lezat dengan mi instan', price: 17000, category: 'tekwan' },
 
-        // --- Kategori: FROZEN ---
         { id: 'f_campur', name: 'Frozen Pempek Campur', desc: '1 Paket isi 5 pcs campur (Vakum)', price: 15000, category: 'frozen' },
         { id: 'f_telur', name: 'Frozen Telur Kecil', desc: '1 Paket isi 5 pcs (Vakum)', price: 15000, category: 'frozen' },
         { id: 'f_lenjer', name: 'Frozen Lenjer', desc: '1 Paket isi 5 pcs (Vakum)', price: 15000, category: 'frozen' },
@@ -223,7 +259,6 @@
     let selectedVariants = {}; 
 
     function renderMenu() {
-        // Tampilkan 5 Kategori
         ['bundling', 'satuan', 'premium', 'tekwan', 'frozen'].forEach(cat => {
             const container = document.getElementById(`menu-${cat}`);
             const items = menuData.filter(m => m.category === cat);
@@ -268,23 +303,36 @@
         });
     }
 
+    // FUNGSI FILTER MENU BERDASARKAN ICON YANG DIKLIK
+    function filterMenu(category) {
+        // Hapus status 'active' dari semua icon
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        // Tambahkan status 'active' ke icon yang ditekan
+        document.getElementById('nav-' + category).classList.add('active');
+
+        // Sembunyikan atau tampilkan menu
+        const sections = ['bundling', 'satuan', 'premium', 'tekwan', 'frozen'];
+        sections.forEach(cat => {
+            const el = document.getElementById('section-' + cat);
+            if (category === 'all' || category === cat) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        });
+    }
+
     function selectVariant(itemId, variantName) {
         const item = menuData.find(m => m.id === itemId);
-        
         item.variants.forEach(v => {
             const pill = document.getElementById(`pill-${itemId}-${v}`);
-            pill.style.background = '#f1f5f9';
-            pill.style.color = '#475569';
-            pill.style.borderColor = '#e2e8f0';
+            pill.style.background = '#f1f5f9'; pill.style.color = '#475569'; pill.style.borderColor = '#e2e8f0';
             pill.querySelector('i').style.opacity = '0';
         });
 
         const activePill = document.getElementById(`pill-${itemId}-${variantName}`);
-        activePill.style.background = '#fef3c7';
-        activePill.style.color = '#b45309';
-        activePill.style.borderColor = '#fde68a';
+        activePill.style.background = '#fef3c7'; activePill.style.color = '#b45309'; activePill.style.borderColor = '#fde68a';
         activePill.querySelector('i').style.opacity = '1';
-        
         selectedVariants[itemId] = variantName;
     }
 
@@ -345,25 +393,19 @@
         const payment = document.getElementById('custPayment').value;
         const note = document.getElementById('custNote').value;
 
-        if(!name) {
-            alert('Mohon isi Nama Pemesan!');
-            return;
-        }
+        if(!name) { alert('Mohon isi Nama Pemesan!'); return; }
 
         const btnSubmit = document.getElementById('btnSubmitForm');
         const originalBtnText = btnSubmit.innerHTML;
         btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses Pesanan...';
         btnSubmit.disabled = true;
 
-        let orderList = "";
-        let orderItemsForDB = [];
-        let total = 0;
+        let orderList = ""; let orderItemsForDB = []; let total = 0;
 
         menuData.forEach(item => {
             if(cart[item.id] > 0) {
                 let variantText = selectedVariants[item.id] ? ` (${selectedVariants[item.id]})` : '';
                 let namaMenuLengkap = item.name + variantText;
-
                 let subtotal = cart[item.id] * item.price;
                 orderList += `▪️ ${cart[item.id]}x ${namaMenuLengkap} (Rp ${subtotal.toLocaleString('id-ID')})\n`;
                 total += subtotal;
@@ -372,33 +414,23 @@
         });
 
         db.collection("orders").add({
-            namaPelanggan: name,
-            tipePesanan: delivery,
-            alamatPengiriman: address,
-            metodePembayaran: payment,
-            catatanTambahan: note || '-',
-            daftarPesanan: orderItemsForDB,
-            totalBelanja: total,
-            tanggalOrder: firebase.firestore.FieldValue.serverTimestamp()
+            namaPelanggan: name, tipePesanan: delivery, alamatPengiriman: address,
+            metodePembayaran: payment, catatanTambahan: note || '-', daftarPesanan: orderItemsForDB,
+            totalBelanja: total, tanggalOrder: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             lanjutKeWhatsApp(name, delivery, address, payment, note, orderList, total);
         }).catch((error) => {
             lanjutKeWhatsApp(name, delivery, address, payment, note, orderList, total);
         }).finally(() => {
-            btnSubmit.innerHTML = originalBtnText;
-            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = originalBtnText; btnSubmit.disabled = false;
         });
     }
 
     function lanjutKeWhatsApp(name, delivery, address, payment, note, orderList, total) {
         const waNumber = "6289508573323"; 
-        
         let addressText = "";
-        if(delivery === "🛵 Antar ke Alamat") {
-            addressText = `📍 Alamat: ${address}\n`;
-        } else if (delivery === "🍽️ Makan di Tempat") {
-            addressText = `🪑 Lokasi: ${address}\n`;
-        }
+        if(delivery === "🛵 Antar ke Alamat") { addressText = `📍 Alamat: ${address}\n`; } 
+        else if (delivery === "🍽️ Makan di Tempat") { addressText = `🪑 Lokasi: ${address}\n`; }
 
         let paymentMessage = payment === "QRIS / Transfer Bank" 
             ? "(Mohon kirimkan bukti transfer/QRIS untuk pembayarannya ya)" 
