@@ -14,6 +14,7 @@
         :root {
             --primary: #d97706; --dark: #0f172a; --bg: #f8fafc; --white: #ffffff;
             --text: #334155; --muted: #64748b; --border: #e2e8f0; --wa: #25D366;
+            --po: #f97316;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg); color: var(--text); padding-bottom: 100px; }
@@ -58,11 +59,19 @@
         .qty-btn:active { transform: scale(0.95); }
         .qty-value { font-size: 14px; font-weight: 700; width: 20px; text-align: center; }
 
+        /* CART BOTTOM & DUAL BUTTONS */
         .cart-bottom { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; z-index: 100; border-top: 1px solid var(--border); }
         .cart-total h4 { font-size: 12px; color: var(--muted); font-weight: 600; }
         .cart-total h2 { font-size: 20px; color: var(--dark); font-weight: 800; }
-        .btn-checkout { background: var(--wa); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: opacity 0.3s; }
+        
+        .cart-actions { display: flex; gap: 8px; align-items: stretch; }
+        .btn-po { background: var(--po); color: white; border: none; width: 45px; border-radius: 12px; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(249, 115, 22, 0.2); }
+        .btn-po:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+        .btn-po:active { transform: scale(0.95); }
+        
+        .btn-checkout { background: var(--wa); color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: opacity 0.3s; }
         .btn-checkout:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .btn-checkout:active { transform: scale(0.95); }
 
         /* MODAL & CART SUMMARY STYLES */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; justify-content: center; align-items: flex-end; }
@@ -165,23 +174,28 @@
         <div class="menu-container" id="menu-frozen"></div>
     </div>
 
-    <div style="height: 40px;"></div>
+    <div style="height: 60px;"></div>
 
     <div class="cart-bottom">
         <div class="cart-total">
             <h4>Total Pesanan:</h4>
             <h2 id="total-price">Rp 0</h2>
         </div>
-        <button class="btn-checkout" id="btn-checkout" disabled onclick="openModal()">
-            <i class="fa-solid fa-basket-shopping"></i> Lanjut Order
-        </button>
+        <div class="cart-actions">
+            <button class="btn-po" id="btn-po" disabled onclick="openModal('po')" title="Jadwalkan Pesanan (Pre-Order)">
+                <i class="fa-solid fa-clock"></i>
+            </button>
+            <button class="btn-checkout" id="btn-checkout" disabled onclick="openModal('now')">
+                <i class="fa-solid fa-basket-shopping"></i> Lanjut
+            </button>
+        </div>
     </div>
 </div>
 
 <div class="modal" id="orderModal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></span>
-        <h3 style="margin-bottom: 15px; color: var(--dark);">Selesaikan Pesanan</h3>
+        <h3 id="modalTitle" style="margin-bottom: 15px; color: var(--dark);">Selesaikan Pesanan</h3>
         
         <div class="cart-summary-box">
             <div class="cart-summary-title">
@@ -204,12 +218,12 @@
             </select>
         </div>
 
-        <div class="form-group">
-            <label>Waktu Pengiriman / Proses</label>
-            <select id="custTime" class="form-control">
-                <option value="🚀 Kirim Sekarang (Dadakan)">🚀 Kirim Sekarang (Dadakan)</option>
-                <option value="⏰ Kirim Nanti Sore (Jam 16.00 - 18.00)">⏰ Kirim Nanti Sore (Jam 16.00 - 18.00)</option>
-                <option value="🌙 Kirim Nanti Malam (Jam 19.00 - 21.00)">🌙 Kirim Nanti Malam (Jam 19.00 - 21.00)</option>
+        <div class="form-group" id="poGroup" style="display: none; background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px dashed #f59e0b;">
+            <label style="color: #b45309;"><i class="fa-solid fa-clock"></i> Pilih Waktu Pengiriman / Proses</label>
+            <select id="custTime" class="form-control" style="border-color: #fde68a;">
+                <option value="⏰ Kirim Nanti Sore (Jam 16.00 - 18.00)">⏰ Nanti Sore (Jam 16.00 - 18.00)</option>
+                <option value="🌙 Kirim Nanti Malam (Jam 19.00 - 21.00)">🌙 Nanti Malam (Jam 19.00 - 21.00)</option>
+                <option value="☀️ Besok Pagi">☀️ Besok Pagi</option>
             </select>
         </div>
 
@@ -230,7 +244,7 @@
             <input type="text" id="custNote" class="form-control" placeholder="Contoh: Cukonya dipisah / Banyakin pedas">
         </div>
         
-        <button id="btnSubmitForm" class="btn-checkout" style="width: 100%; margin-top: 10px;" onclick="kirimKeWA()">
+        <button id="btnSubmitForm" class="btn-checkout" style="width: 100%; margin-top: 10px; padding: 14px;" onclick="kirimKeWA()">
             Kirim Pesanan Sekarang <i class="fa-solid fa-paper-plane"></i>
         </button>
     </div>
@@ -281,6 +295,7 @@
 
     let cart = {};
     let selectedVariants = {}; 
+    let currentOrderMode = 'now'; // Menyimpan mode order (sekarang atau pre-order)
 
     function renderMenu() {
         ['bundling', 'satuan', 'premium', 'tekwan', 'frozen'].forEach(cat => {
@@ -365,13 +380,18 @@
             totalItems += cart[item.id];
         });
         document.getElementById('total-price').innerText = `Rp ${total.toLocaleString('id-ID')}`;
-        const btn = document.getElementById('btn-checkout');
+        
+        const btnCheckout = document.getElementById('btn-checkout');
+        const btnPo = document.getElementById('btn-po');
+        
         if(totalItems > 0) {
-            btn.disabled = false;
-            btn.innerHTML = `<i class="fa-solid fa-basket-shopping"></i> Pesan (${totalItems} Item)`;
+            btnCheckout.disabled = false;
+            btnPo.disabled = false;
+            btnCheckout.innerHTML = `<i class="fa-solid fa-basket-shopping"></i> Pesan (${totalItems})`;
         } else {
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-basket-shopping"></i> Lanjut Order`;
+            btnCheckout.disabled = true;
+            btnPo.disabled = true;
+            btnCheckout.innerHTML = `<i class="fa-solid fa-basket-shopping"></i> Lanjut`;
         }
     }
 
@@ -397,7 +417,18 @@
         }
     }
 
-    function openModal() { 
+    // FUNGSI BUKA MODAL DENGAN PARAMETER MODE (now / po)
+    function openModal(mode) { 
+        currentOrderMode = mode;
+        
+        if (mode === 'po') {
+            document.getElementById('modalTitle').innerText = 'Jadwalkan Pre-Order';
+            document.getElementById('poGroup').style.display = 'block';
+        } else {
+            document.getElementById('modalTitle').innerText = 'Selesaikan Pesanan';
+            document.getElementById('poGroup').style.display = 'none';
+        }
+
         let summaryHtml = '';
         let total = 0;
         
@@ -435,10 +466,15 @@
     function kirimKeWA() {
         const name = document.getElementById('custName').value;
         const delivery = document.getElementById('custDelivery').value;
-        const timeDelivery = document.getElementById('custTime').value; // Ambil opsi waktu
         const address = document.getElementById('custAddress').value || '-';
         const payment = document.getElementById('custPayment').value;
         const note = document.getElementById('custNote').value;
+        
+        // Logika Waktu Pengiriman
+        let timeDelivery = "🚀 Kirim Sekarang (Dadakan)";
+        if (currentOrderMode === 'po') {
+            timeDelivery = document.getElementById('custTime').value;
+        }
 
         if(!name) { alert('Mohon isi Nama Pemesan!'); return; }
 
@@ -460,7 +496,6 @@
             }
         });
 
-        // Simpan data lengkap ke database Firestore (Termasuk Waktu Pengiriman)
         db.collection("orders").add({
             namaPelanggan: name, 
             tipePesanan: delivery, 
@@ -490,9 +525,10 @@
             ? "(Mohon kirimkan bukti transfer/QRIS untuk pembayarannya ya)" 
             : "(Akan dibayar tunai di kasir)";
 
-        // Format pesan teks WhatsApp dengan penambahan Waktu Pengiriman (Cetak Tebal)
+        let timeMessage = currentOrderMode === 'po' ? `⏱️ Waktu Kirim: *${timeDelivery}*\n` : `⏱️ Waktu Kirim: *Sekarang/Dadakan*\n`;
+
         const textMessage = `*HALO IBU ITA, ADA PESANAN BARU:* 🐟\n\n` +
-            `*DATA PEMESAN:*\n👤 Nama: ${name}\n📦 Tipe: ${delivery}\n⏱️ Waktu Kirim: *${timeDelivery}*\n${addressText}💳 Bayar: ${payment}\n📝 Catatan: ${note || '-'}\n\n` +
+            `*DATA PEMESAN:*\n👤 Nama: ${name}\n📦 Tipe: ${delivery}\n${timeMessage}${addressText}💳 Bayar: ${payment}\n📝 Catatan: ${note || '-'}\n\n` +
             `*DETAIL PESANAN:*\n${orderList}\n*TOTAL BELANJA: Rp ${total.toLocaleString('id-ID')}*\n\n${paymentMessage}`;
 
         window.location.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(textMessage)}`;
