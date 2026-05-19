@@ -29,6 +29,7 @@
         .promo-text strong { font-size: 14px; font-weight: 800; color: #b45309; display: block; margin-bottom: 2px; }
         .promo-text p { font-size: 11px; color: #92400e; line-height: 1.4; }
 
+        /* FILTER IKON MENU */
         .quick-nav-wrapper { padding: 0 0 10px 15px; }
         .quick-nav { display: flex; gap: 12px; overflow-x: auto; scroll-behavior: smooth; padding-right: 15px; padding-bottom: 10px; }
         .quick-nav::-webkit-scrollbar { display: none; }
@@ -63,7 +64,7 @@
         .btn-checkout { background: var(--wa); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: opacity 0.3s; }
         .btn-checkout:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-        /* MODAL & CART SUMMARY STYLES (DIPERBARUI) */
+        /* MODAL & CART SUMMARY STYLES */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; justify-content: center; align-items: flex-end; }
         .modal.active { display: flex; animation: fadeIn 0.3s; }
         .modal-content { background: var(--white); width: 100%; max-width: 500px; padding: 25px; border-radius: 20px 20px 0 0; animation: slideUp 0.3s; max-height: 90vh; overflow-y: auto; }
@@ -186,8 +187,7 @@
             <div class="cart-summary-title">
                 <i class="fa-solid fa-basket-shopping" style="color: var(--primary);"></i> Daftar Pesanan Anda:
             </div>
-            <div id="cartSummaryList">
-                </div>
+            <div id="cartSummaryList"></div>
         </div>
         
         <div class="form-group">
@@ -201,6 +201,15 @@
                 <option value="🛵 Antar ke Alamat">🛵 Antar ke Alamat</option>
                 <option value="🏪 Bungkus / Bawa Pulang">🏪 Bungkus / Bawa Pulang</option>
                 <option value="🍽️ Makan di Tempat">🍽️ Makan di Tempat (Ruko)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Waktu Pengiriman / Proses</label>
+            <select id="custTime" class="form-control">
+                <option value="🚀 Kirim Sekarang (Dadakan)">🚀 Kirim Sekarang (Dadakan)</option>
+                <option value="⏰ Kirim Nanti Sore (Jam 16.00 - 18.00)">⏰ Kirim Nanti Sore (Jam 16.00 - 18.00)</option>
+                <option value="🌙 Kirim Nanti Malam (Jam 19.00 - 21.00)">🌙 Kirim Nanti Malam (Jam 19.00 - 21.00)</option>
             </select>
         </div>
 
@@ -389,7 +398,6 @@
     }
 
     function openModal() { 
-        // GENERATE DAFTAR KERANJANG SEBELUM MODAL MUNCUL
         let summaryHtml = '';
         let total = 0;
         
@@ -427,6 +435,7 @@
     function kirimKeWA() {
         const name = document.getElementById('custName').value;
         const delivery = document.getElementById('custDelivery').value;
+        const timeDelivery = document.getElementById('custTime').value; // Ambil opsi waktu
         const address = document.getElementById('custAddress').value || '-';
         const payment = document.getElementById('custPayment').value;
         const note = document.getElementById('custNote').value;
@@ -451,20 +460,27 @@
             }
         });
 
+        // Simpan data lengkap ke database Firestore (Termasuk Waktu Pengiriman)
         db.collection("orders").add({
-            namaPelanggan: name, tipePesanan: delivery, alamatPengiriman: address,
-            metodePembayaran: payment, catatanTambahan: note || '-', daftarPesanan: orderItemsForDB,
-            totalBelanja: total, tanggalOrder: firebase.firestore.FieldValue.serverTimestamp()
+            namaPelanggan: name, 
+            tipePesanan: delivery, 
+            waktuPengiriman: timeDelivery, 
+            alamatPengiriman: address,
+            metodePembayaran: payment, 
+            catatanTambahan: note || '-', 
+            daftarPesanan: orderItemsForDB,
+            totalBelanja: total, 
+            tanggalOrder: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
-            lanjutKeWhatsApp(name, delivery, address, payment, note, orderList, total);
+            lanjutKeWhatsApp(name, delivery, timeDelivery, address, payment, note, orderList, total);
         }).catch((error) => {
-            lanjutKeWhatsApp(name, delivery, address, payment, note, orderList, total);
+            lanjutKeWhatsApp(name, delivery, timeDelivery, address, payment, note, orderList, total);
         }).finally(() => {
             btnSubmit.innerHTML = originalBtnText; btnSubmit.disabled = false;
         });
     }
 
-    function lanjutKeWhatsApp(name, delivery, address, payment, note, orderList, total) {
+    function lanjutKeWhatsApp(name, delivery, timeDelivery, address, payment, note, orderList, total) {
         const waNumber = "6289508573323"; 
         let addressText = "";
         if(delivery === "🛵 Antar ke Alamat") { addressText = `📍 Alamat: ${address}\n`; } 
@@ -474,8 +490,9 @@
             ? "(Mohon kirimkan bukti transfer/QRIS untuk pembayarannya ya)" 
             : "(Akan dibayar tunai di kasir)";
 
+        // Format pesan teks WhatsApp dengan penambahan Waktu Pengiriman (Cetak Tebal)
         const textMessage = `*HALO IBU ITA, ADA PESANAN BARU:* 🐟\n\n` +
-            `*DATA PEMESAN:*\n👤 Nama: ${name}\n📦 Tipe: ${delivery}\n${addressText}💳 Bayar: ${payment}\n📝 Catatan: ${note || '-'}\n\n` +
+            `*DATA PEMESAN:*\n👤 Nama: ${name}\n📦 Tipe: ${delivery}\n⏱️ Waktu Kirim: *${timeDelivery}*\n${addressText}💳 Bayar: ${payment}\n📝 Catatan: ${note || '-'}\n\n` +
             `*DETAIL PESANAN:*\n${orderList}\n*TOTAL BELANJA: Rp ${total.toLocaleString('id-ID')}*\n\n${paymentMessage}`;
 
         window.location.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(textMessage)}`;
